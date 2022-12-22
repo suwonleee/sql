@@ -332,6 +332,268 @@ SELECT
   '01' = '1',
   CONVERT('01', DECIMAL) = CONVERT('1', DECIMAL);
 
+-- 11. 시간/날짜 관련 함수들
+
+-- 현재 날짜, 시간을 반환하기
+SELECT CURDATE(), CURTIME(), NOW();
+
+--문자열에 따라 날짜, 시간 생성
+SELECT
+  '2021-6-1' = '2021-06-01',
+  DATE('2021-6-1') = DATE('2021-06-01'),
+  '1:2:3' = '01:02:03',
+  TIME('1:2:3') = TIME('01:02:03');
+
+SELECT
+  '2021-6-1 1:2:3' = '2021-06-01 01:02:03',
+  DATE('2021-6-1 1:2:3') = DATE('2021-06-01 01:02:03'),
+  TIME('2021-6-1 1:2:3') = TIME('2021-06-01 01:02:03'),
+  DATE('2021-6-1 1:2:3') = TIME('2021-06-01 01:02:03'),
+  DATE('2021-6-1') = DATE('2021-06-01 01:02:03'),
+  TIME('2021-6-1 1:2:3') = TIME('01:02:03');
+
+SELECT * FROM Orders
+WHERE
+  OrderDate BETWEEN DATE('1997-1-1') AND DATE('1997-1-31');
+
+--DATETIME의 정보 반환
+SELECT
+  OrderDate,
+  YEAR(OrderDate) AS YEAR, --연도 반환
+  MONTHNAME(OrderDate) AS MONTHNAME, --월 반환
+  MONTH(OrderDate) AS MONTH,
+  WEEKDAY(OrderDate) AS WEEKDAY, --주 반환
+  DAYNAME(OrderDate) AS DAYNAME, --요일명 반환
+  DAY(OrderDate) AS DAY --날짜 반환
+FROM Orders;
+
+SELECT
+  OrderDate,
+  CONCAT(
+    CONCAT_WS(
+      '/',
+      YEAR(OrderDate), MONTH(OrderDate), DAY(OrderDate)
+    ),
+    ' ',
+    UPPER(LEFT(DAYNAME(OrderDate), 3))
+  )
+FROM Orders;
+
+SELECT * FROM Orders
+WHERE WEEKDAY(OrderDate) = 0;
+
+
+-- 주어진 DATETIME의 시 분 초 반환
+SELECT
+  HOUR(NOW()), MINUTE(NOW()), SECOND(NOW());
+
+--시간/ 날짜 더하기 , 빼기 
+SELECT 
+  ADDDATE('2021-06-20', INTERVAL 1 YEAR),
+  ADDDATE('2021-06-20', INTERVAL -2 MONTH),
+  ADDDATE('2021-06-20', INTERVAL 3 WEEK),
+  ADDDATE('2021-06-20', INTERVAL -4 DAY),
+  ADDDATE('2021-06-20', INTERVAL -5 MINUTE),
+  ADDDATE('2021-06-20 13:01:12', INTERVAL 6 SECOND);
+
+SELECT
+  OrderDate,
+  ADDDATE(OrderDate, INTERVAL 1 YEAR),
+  ADDDATE(OrderDate, INTERVAL -2 MONTH),
+  ADDDATE(OrderDate, INTERVAL 3 WEEK),
+  ADDDATE(OrderDate, INTERVAL -4 DAY),
+  ADDDATE(OrderDate, INTERVAL -5 MINUTE)
+FROM Orders;
+
+
+--두 시간 / 날짜간 일수, 시간차
+SELECT
+  OrderDate,
+  NOW(),
+  DATEDIFF(OrderDate, NOW())
+FROM Orders;
+
+SELECT
+  TIMEDIFF('2021-06-21 15:20:35', '2021-06-21 16:34:41');
+
+
+SELECT * FROM Orders
+WHERE
+  ABS(DATEDIFF(OrderDate, '1996-10-10')) < 5;
+
+--해당 달의 마지막 날짜.
+SELECT
+  OrderDate,
+  LAST_DAY(OrderDate),
+  DAY(LAST_DAY(OrderDate)),
+  DATEDIFF(LAST_DAY(OrderDate), OrderDate)
+FROM Orders;
+
+--시간/날짜를 지정한 형식으로 반환
+SELECT
+  DATE_FORMAT(NOW(), '%M %D, %Y %T'), --월, 일, 연도4자리, hh:mm:ss
+  DATE_FORMAT(NOW(), '%y-%m-%d %h:%i:%s %p'),
+  DATE_FORMAT(NOW(), '%Y년 %m월 %d일 %p %h시 %i분 %s초');
+
+SELECT REPLACE(
+  REPLACE(
+    DATE_FORMAT(NOW(), '%Y년 %m월 %d일 %p %h시 %i분 %초'),
+    'AM', '오전'
+  ),
+  'PM', '오후'
+)
+
+--날짜 s를 f 형식으로 해석하여 시간/ 날짜 생성
+SELECT
+  DATEDIFF(
+    STR_TO_DATE('2021-06-04 07:48:52', '%Y-%m-%d %T'),
+    STR_TO_DATE('2021-06-01 12:30:05', '%Y-%m-%d %T')
+  ),
+  TIMEDIFF(
+    STR_TO_DATE('2021-06-04 07:48:52', '%Y-%m-%d %T'),
+    STR_TO_DATE('2021-06-01 12:30:05', '%Y-%m-%d %T')
+  );
+
+
+SELECT
+  OrderDate,
+  DATEDIFF(
+    STR_TO_DATE('1997-01-01 13:24:35', '%Y-%m-%d %T'),
+    OrderDate
+  ),
+  TIMEDIFF(
+    STR_TO_DATE('1997-01-01 13:24:35', '%Y-%m-%d %T'),
+    STR_TO_DATE(CONCAT(OrderDate, ' ', '00:00:00'), '%Y-%m-%d %T')
+  )
+FROM Orders;
+
+-- 12. 기타 함수들
+
+--조건이 참이라면 T, 거짓이라면 F 반환
+SELECT IF (1 > 2, '1는 2보다 크다.', '1은 2보다 작다.');
+
+--CASE
+SELECT
+CASE
+  WHEN -1 > 0 THEN '-1은 양수다.'
+  WHEN -1 = 0 THEN '-1은 0이다.'
+  ELSE '-1은 음수다.'
+END;
+
+SELECT
+  Price,
+  IF (Price > 30, 'Expensive', 'Cheap'),
+  CASE
+    WHEN Price < 20 THEN '저가'
+    WHEN Price BETWEEN 20 AND 30 THEN '일반'
+    ELSE '고가'
+  END
+FROM Products;
+
+--A가 null일 때 B출력
+SELECT
+  IFNULL('A', 'B'),
+  IFNULL(NULL, 'B');
+
+
+--13. GROUP BY - 조건에 따라 집계된 값을 가져옵니다.
+SELECT Country FROM Customers
+GROUP BY Country;
+
+SELECT CategoryID FROM Products
+GROUP BY CategoryID;
+
+--여러 컬럼을 기준으로 그룹화할 수도 있습니다.
+SELECT 
+  Country, City,
+  CONCAT_WS(', ', City, Country)
+FROM Customers
+GROUP BY Country, City;
+
+--그룹 함수 활용하기
+SELECT
+  COUNT(*), OrderDate
+FROM Orders
+GROUP BY OrderDate;
+
+SELECT
+  ProductID,
+  SUM(Quantity) AS QuantitySum
+FROM OrderDetails
+GROUP BY ProductID
+ORDER BY QuantitySum DESC;
+
+SELECT
+  CategoryID,
+  MAX(Price) AS MaxPrice, 
+  MIN(Price) AS MinPrice,
+  TRUNCATE((MAX(Price) + MIN(Price)) / 2, 2) AS MedianPrice,
+  TRUNCATE(AVG(Price), 2) AS AveragePrice
+FROM Products
+GROUP BY CategoryID;
+
+SELECT 
+  CONCAT_WS(', ', City, Country) AS Location,
+  COUNT(CustomerID)
+FROM Customers
+GROUP BY Country, City;
+
+-- WITH ROLLUP - 전체의 집계값
+SELECT
+  Country, COUNT(*)
+FROM Suppliers
+GROUP BY Country
+WITH ROLLUP;
+
+--HAVING - 그룹화된 데이터 걸러내기
+SELECT
+  Country, COUNT(*) AS Count
+FROM Suppliers
+GROUP BY Country
+HAVING Count >= 3;
+
+-- WHERE는 그룹하기 전 데이터, HAVING은 그룹 후 집계에 사용합니다.
+SELECT
+  COUNT(*) AS Count, OrderDate
+FROM Orders
+WHERE OrderDate > DATE('1996-12-31')
+GROUP BY OrderDate
+HAVING Count > 2;
+
+SELECT
+  CategoryID,
+  MAX(Price) AS MaxPrice, 
+  MIN(Price) AS MinPrice,
+  TRUNCATE((MAX(Price) + MIN(Price)) / 2, 2) AS MedianPrice,
+  TRUNCATE(AVG(Price), 2) AS AveragePrice
+FROM Products
+WHERE CategoryID > 2
+GROUP BY CategoryID
+HAVING
+  AveragePrice BETWEEN 20 AND 30
+  AND MedianPrice < 40;
+
+--14. DISTINCT - 중복된 값들을 제거합니다.
+--GROUP BY 와 달리 집계함수가 사용되지 않습니다.
+--GROUP BY 와 달리 정렬하지 않으므로 더 빠릅니다.
+
+SELECT DISTINCT CategoryID
+FROM Products;
+-- 위의 GROUP BY를 사용한 쿼리와 결과 비교
+
+SELECT COUNT DISTINCT CategoryID
+FROM Products;
+-- 오류 발생
+
+SELECT DISTINCT Country
+FROM Customers
+ORDER BY Country;
+
+SELECT DISTINCT Country, City
+FROM Customers
+ORDER BY Country, City;
+
+
 -- *******************************
 -- 각종 연산자들
 
