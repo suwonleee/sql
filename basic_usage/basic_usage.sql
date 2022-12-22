@@ -4,9 +4,11 @@
 -- SELECT - 내가 원하는 정보 가져오기
 -- *******************************
 
+-- *******************************
 -- 1. 테이블의 모든 내용 보기
 SELECT * FROM Customers;
 
+-- *******************************
 -- 2. 원하는 column(열)만 골라서 보기
 SELECT CustomerName FROM Customers;
 SELECT CustomerName, ContactName, Country FROM Customers;
@@ -16,6 +18,7 @@ SELECT
   CustomerName, 1, 'Hello', NULL
 FROM Customers;
 
+-- *******************************
 -- 3. 원하는 조건의 row(행)만 걸러서 보기
 SELECT * FROM Orders
 WHERE EmployeeID = 3;
@@ -23,7 +26,7 @@ WHERE EmployeeID = 3;
 SELECT * FROM OrderDetails 
 WHERE Quantity < 5;
 
-
+-- *******************************
 -- 4. 원하는 순서로 데이터 가져오기
 SELECT * FROM Customers
 ORDER BY ContactName;
@@ -31,6 +34,7 @@ ORDER BY ContactName;
 SELECT * FROM OrderDetails
 ORDER BY ProductID ASC, Quantity DESC;
 
+-- *******************************
 -- 5. 원하는 만큼만 데이터 가져오기
 SELECT * FROM Customers
 LIMIT 10;
@@ -41,6 +45,7 @@ LIMIT 0, 10;
 SELECT * FROM Customers
 LIMIT 30, 10;
 
+-- *******************************
 -- 6. 원하는 별명(alias)으로 데이터 가져오기
 SELECT
   CustomerId AS ID,
@@ -67,6 +72,7 @@ ORDER BY CustomerName
 LIMIT 0, 5;
 
 
+-- *******************************
 -- 7. 사칙연산
 SELECT 1 + 2;
 SELECT 5 - 2.5 AS DIFFERENCE;
@@ -86,6 +92,7 @@ SELECT
   Price / 2 AS HalfPrice
 FROM Products;
 
+-- *******************************
 -- 8. 참/거짓 관련 연산자
 SELECT TRUE, FALSE;
 SELECT !TRUE, NOT 1, !FALSE, NOT FALSE;
@@ -180,6 +187,7 @@ WHERE OrderID LIKE '1025_'
 -- 숫자로 구성된 문자열은 숫자로 자동인식
 
 
+-- *******************************
 --9 숫자와 관련된 함수들
 --반올림 / 올림 / 내림
 SELECT 
@@ -236,6 +244,7 @@ SELECT
   TRUNCATE(1234.5678, -3);
 
 
+-- *******************************
 -- 10. 문자열 관련 함수들
 
 -- 대문자로, 소문자로
@@ -332,6 +341,7 @@ SELECT
   '01' = '1',
   CONVERT('01', DECIMAL) = CONVERT('1', DECIMAL);
 
+-- *******************************
 -- 11. 시간/날짜 관련 함수들
 
 -- 현재 날짜, 시간을 반환하기
@@ -467,6 +477,7 @@ SELECT
   )
 FROM Orders;
 
+-- *******************************
 -- 12. 기타 함수들
 
 --조건이 참이라면 T, 거짓이라면 F 반환
@@ -496,6 +507,7 @@ SELECT
   IFNULL(NULL, 'B');
 
 
+-- *******************************
 --13. GROUP BY - 조건에 따라 집계된 값을 가져옵니다.
 SELECT Country FROM Customers
 GROUP BY Country;
@@ -573,6 +585,7 @@ HAVING
   AveragePrice BETWEEN 20 AND 30
   AND MedianPrice < 40;
 
+-- *******************************
 --14. DISTINCT - 중복된 값들을 제거합니다.
 --GROUP BY 와 달리 집계함수가 사용되지 않습니다.
 --GROUP BY 와 달리 정렬하지 않으므로 더 빠릅니다.
@@ -593,6 +606,12 @@ SELECT DISTINCT Country, City
 FROM Customers
 ORDER BY Country, City;
 
+--GROUP BY와 DISTINCT 함께 활용하기
+SELECT
+  Country,
+  COUNT(DISTINCT CITY)
+FROM Customers
+GROUP BY Country;
 
 -- *******************************
 -- 각종 연산자들
