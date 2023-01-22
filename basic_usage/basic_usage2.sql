@@ -217,3 +217,62 @@ LEFT JOIN Suppliers S
 ON C.City = S.City AND C.Country = S.Country;
 
 -- LEFT를 RIGHT로 바꿔서도 실행해 볼 것
+
+-- *******************************
+-- 5. CROSS JOIN - 교차 조인
+-- 조건 없이 모든 조합 반환(A * B)
+
+SELECT
+  E1.LastName, E2.FirstName
+FROM Employees E1
+CROSS JOIN Employees E2
+ORDER BY E1.EmployeeID;
+
+-- *******************************
+-- 6, 집합 (합집합 / 교집합 / 차집합 / 대칭 차집합)
+-- UNION 중복 제거한 집합 / UNION ALL 중복을 제거하지 않은 집합
+SELECT CustomerName AS Name, City, Country, 'CUSTOMER'
+FROM Customers
+UNION
+SELECT SupplierName AS Name, City, Country, 'SUPPLIER'
+FROM Suppliers
+ORDER BY Name;
+
+-- 합집합
+SELECT CategoryID AS ID FROM Categories
+WHERE CategoryID > 4
+UNION
+SELECT EmployeeID AS ID FROM Employees
+WHERE EmployeeID % 2 = 0;
+
+-- UNION ALL로 바꿔볼 것
+
+
+--교집합
+SELECT CategoryID AS ID
+FROM Categories C, Employees E
+WHERE 
+  C.CategoryID > 4
+  AND E.EmployeeID % 2 = 0
+  AND C.CategoryID = E.EmployeeID;
+
+--차집합
+SELECT CategoryID AS ID
+FROM Categories
+WHERE 
+  CategoryID > 4
+  AND CategoryID NOT IN (
+    SELECT EmployeeID
+    FROM Employees
+    WHERE EmployeeID % 2 = 0
+  );
+
+  --합집합 - 교집합
+  SELECT ID FROM (
+  SELECT CategoryID AS ID FROM Categories
+  WHERE CategoryID > 4
+  UNION ALL
+  SELECT EmployeeID AS ID FROM Employees
+  WHERE EmployeeID % 2 = 0
+) AS Temp 
+GROUP BY ID HAVING COUNT(*) = 1;
