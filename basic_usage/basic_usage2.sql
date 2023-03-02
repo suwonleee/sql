@@ -267,7 +267,7 @@ WHERE
     WHERE EmployeeID % 2 = 0
   );
 
-  --합집합 - 교집합
+  -- 대칭차집합 (합집합 - 교집합)
   SELECT ID FROM (
   SELECT CategoryID AS ID FROM Categories
   WHERE CategoryID > 4
